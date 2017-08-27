@@ -3,7 +3,7 @@ require 'json'
 
 class VimSolargraph
   def initialize(workspace)
-    VIM::message "Parsing files..."
+    #VIM::message "Parsing Ruby files..."
     @cw        = VIM::Window.current
     @cb        = VIM::Buffer.current
 
@@ -22,6 +22,15 @@ class VimSolargraph
     #puts @line
     #puts @column
     #puts @workspace
+  end
+
+
+  def prepare
+    #puts "Parsing Ruby files..."
+    #VIM::evaluate( "echomParsing Ruby files...")
+    VIM::message "Parsing Ruby files..."
+    RestClient.post "http://localhost:7657/prepare", {"workspace": @workspace}
+    return nil
   end
 
 

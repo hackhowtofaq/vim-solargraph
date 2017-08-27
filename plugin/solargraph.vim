@@ -35,6 +35,12 @@ function! RubySolar()
 EOF
 endfunction
 
+function! RubySolarPrepare()
+  ruby << EOF
+  ko = VimSolargraph.new( VIM::evaluate("s:Setcwd()") )
+  ko.prepare
+EOF
+endfunction
 
 
 function! solargraph#CompleteSolar(findstart, base)
@@ -57,4 +63,8 @@ function! solargraph#CompleteSolar(findstart, base)
         endfor
         return res
     endif
+endfun
+
+function! HAHA()
+  execute 'silent echomsg "SKATA"'
 endfun
