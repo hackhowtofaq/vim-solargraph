@@ -2,7 +2,7 @@ require 'rest-client'
 require 'json'
 
 class VimSolargraph
-  def initialize
+  def initialize(workspace)
     VIM::message "Parsing files..."
     @cw        = VIM::Window.current
     @cb        = VIM::Buffer.current
@@ -11,7 +11,10 @@ class VimSolargraph
     @filename  = VIM::evaluate("expand('%:p')")
     @line      = @cw.cursor[0] - 1
     @column    = @cw.cursor[1]
-    @workspace = VIM::evaluate('getcwd()')
+    #@workspace = VIM::evaluate('getcwd()')
+    @workspace = workspace
+
+    puts @workspace
 
     #puts @text.size
     #puts @text

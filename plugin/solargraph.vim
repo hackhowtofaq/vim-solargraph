@@ -6,12 +6,31 @@ let g:loaded_vim_solargraph = 1
 
 
 let s:plugindir = expand('<sfile>:p:h') . "/main.rb"
-execute 'rubyfile ' . s:plugindir 
+execute 'rubyfile ' . s:plugindir
+
+
+"" https://github.com/ctrlpvim/ctrlp.vim/issues/59
+"" Or else use https://github.com/dbakker/vim-projectroot
+"function! s:setcwd()
+function! s:Setcwd()
+  if exists("g:SessionLoad") | retu | en
+  let cph = expand('%:p:h', 1)
+  if cph =~ '^.\+://' | retu | en
+  for mkr in ['.git/', '.hg/', '.svn/', '.bzr/', '_darcs/', '.vimprojects']
+    let wd = call('find'.(mkr =~ '/$' ? 'dir' : 'file'), [mkr, cph.';'])
+    if wd != '' | let &acd = 0 | brea | en
+  endfo
+  "exe 'lc!' fnameescape(wd == '' ? cph : substitute(wd, mkr.'$', '.', ''))
+  "echomsg fnameescape(wd == '' ? cph : substitute(wd, mkr.'$', '', ''))
+  let s:workspace = fnameescape(wd == '' ? cph : substitute(wd, mkr.'$', '', ''))
+  return s:workspace
+endfunction
+
 
 function! RubySolar()
   "echom "Hello, world!"
   ruby << EOF
-  ko = VimSolargraph.new
+  ko = VimSolargraph.new( VIM::evaluate("s:Setcwd()") )
   VIM::command("return #{ko.suggest.inspect}")
 EOF
 endfunction
@@ -23,7 +42,7 @@ function! solargraph#CompleteSolar(findstart, base)
         " locate the start of the word
         let line = getline('.')
         let start = col('.') - 1
-        while start > 0 && line[start - 1] =~ '\a' 
+        while start > 0 && line[start - 1] =~ '\a'
             let start -= 1
         endwhile
         return start
@@ -39,19 +58,3 @@ function! solargraph#CompleteSolar(findstart, base)
         return res
     endif
 endfun
-
-
-"" https://github.com/ctrlpvim/ctrlp.vim/issues/59
-"" Or else use https://github.com/dbakker/vim-projectroot
-function! s:setcwd()
-  if exists("g:SessionLoad") | retu | en
-  let cph = expand('%:p:h', 1)
-  if cph =~ '^.\+://' | retu | en
-  for mkr in ['.git/', '.hg/', '.svn/', '.bzr/', '_darcs/', '.vimprojects']
-    let wd = call('find'.(mkr =~ '/$' ? 'dir' : 'file'), [mkr, cph.';'])
-    if wd != '' | let &acd = 0 | brea | en
-  endfo
-  exe 'lc!' fnameescape(wd == '' ? cph : substitute(wd, mkr.'$', '.', ''))
-endfunction
-
-autocmd BufEnter * call s:setcwd()
