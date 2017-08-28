@@ -12,32 +12,24 @@ execute 'rubyfile ' . s:plugindir
 "" https://github.com/ctrlpvim/ctrlp.vim/issues/59
 "" Or else use https://github.com/dbakker/vim-projectroot
 "function! s:setcwd()
-function! s:Setcwd()
-  if exists("g:SessionLoad") | retu | en
+function! s:rubySolarSetcwd()
   let cph = expand('%:p:h', 1)
-  if cph =~ '^.\+://' | retu | en
-  for mkr in ['.git/', '.hg/', '.svn/', '.bzr/', '_darcs/', '.vimprojects']
-    let wd = call('find'.(mkr =~ '/$' ? 'dir' : 'file'), [mkr, cph.';'])
-    if wd != '' | let &acd = 0 | brea | en
-  endfo
-  "exe 'lc!' fnameescape(wd == '' ? cph : substitute(wd, mkr.'$', '.', ''))
-  "echomsg fnameescape(wd == '' ? cph : substitute(wd, mkr.'$', '', ''))
-  let s:workspace = fnameescape(wd == '' ? cph : substitute(wd, mkr.'$', '', ''))
-  return s:workspace
+  "echomsg projectroot#guess(cph)
+  return projectroot#guess(cph)
 endfunction
 
 
 function! RubySolar()
   "echom "Hello, world!"
   ruby << EOF
-  ko = VimSolargraph.new( VIM::evaluate("s:Setcwd()") )
+  ko = VimSolargraph.new( VIM::evaluate("s:rubySolarSetcwd()") )
   VIM::command("return #{ko.suggest.inspect}")
 EOF
 endfunction
 
 function! RubySolarPrepare()
   ruby << EOF
-  ko = VimSolargraph.new( VIM::evaluate("s:Setcwd()") )
+  ko = VimSolargraph.new( VIM::evaluate("s:rubySolarSetcwd()") )
   ko.prepare
 EOF
 endfunction
