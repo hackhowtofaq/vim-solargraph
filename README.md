@@ -131,7 +131,7 @@ class A
 end
 ```
 
-* Create file `a.rb` and paste
+* Create file `b.rb` and paste
 
 ```ruby
 # b.rb
